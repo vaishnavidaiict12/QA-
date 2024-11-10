@@ -53,22 +53,33 @@ import os
 Script Logic
 Initialize WebDriver: Sets up the Chrome WebDriver and opens the Amazon homepage.
 Define Helper Functions:
+
 wait_for_element: Waits for an element to be visible on the page.
+
 scroll_and_highlight: Scrolls to the element, highlights it, and takes a screenshot.
+
 Test Function - test_search_and_product_details:
 Opens the Amazon homepage and searches for "Laptop".
+
 Validates that search results are displayed, each containing title, price, and rating (for the first three results).
+
 Clicks on the first product to navigate to the details page and validates the presence of product title, price, and availability.
+
 Error Handling: Catches assertion and timeout errors, logging them appropriately.
+
 Cleanup: Closes the browser after the test is complete.
 
 
 Expected Output
 Console Output: Displays the result (pass/fail) for each validation point.
+
 Screenshots: Captures screenshots at each validation point:
-search_results.png: Search results page.
+
+
 product_1_title.png, product_1_price.png, etc., for each product detail.
+
 product_details_title.png, product_details_price.png, product_details_availability.png on the product details page.
+
 
 
 Example of Console Output
