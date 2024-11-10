@@ -1,0 +1,100 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
+import time
+import os
+
+# Initialize WebDriver
+driver = webdriver.Chrome()
+
+# Wait helper function for element visibility
+def wait_for_element(by, identifier, timeout=10):
+    return WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((by, identifier)))
+
+# Scroll and highlight an element before taking a screenshot
+def scroll_and_highlight(element, filename):
+    driver.execute_script("arguments[0].scrollIntoView(true);", element)  # Scroll to the element
+    driver.execute_script("arguments[0].style.border='3px solid red'", element)  # Highlight element
+    time.sleep(1)  # Wait for highlighting effect
+    driver.save_screenshot(f"testcase11/{filename}.png")
+    print(f"Screenshot saved as testcase11 screenshots/{filename}.png")
+
+def test_search_and_product_details():
+    try:
+        # Step 1: Open the homepage
+        driver.get("https://www.amazon.com")
+        driver.maximize_window()
+        
+        # Step 2: Search for "Laptop"
+        search_box = wait_for_element(By.ID, "twotabsearchtextbox")
+        search_box.send_keys("Laptop")
+        search_box.send_keys(Keys.RETURN)
+        time.sleep(3)  # Allow results to load
+
+        # Step 3: Validate that search results are displayed
+        search_results = wait_for_element(By.CSS_SELECTOR, "div.s-main-slot div[data-component-type='s-search-result']")
+        assert len(driver.find_elements(By.CSS_SELECTOR, "div.s-main-slot div[data-component-type='s-search-result']")) > 0, "No search results found"
+        scroll_and_highlight(search_results, "search_results")
+
+        # Step 4: Validate that each result has name, price, and rating (up to 3 products)
+        for i in range(3):
+            product = driver.find_elements(By.CSS_SELECTOR, "div.s-main-slot div[data-component-type='s-search-result']")[i]
+
+            # Product title
+            title_element = product.find_element(By.CSS_SELECTOR, "span.a-size-medium")
+            assert title_element, f"Title missing for product {i+1}"
+            scroll_and_highlight(title_element, f"product_{i+1}_title")
+
+            # Product price
+            try:
+                price_element = product.find_element(By.CSS_SELECTOR, "span.a-price-whole")
+                scroll_and_highlight(price_element, f"product_{i+1}_price")
+            except:
+                print(f"Price not found for product {i+1}")
+
+            # Product rating
+            try:
+                rating_element = product.find_element(By.CSS_SELECTOR, "span.a-icon-alt")
+                scroll_and_highlight(rating_element, f"product_{i+1}_rating")
+            except:
+                print(f"Rating not found for product {i+1}")
+
+        # Step 5: Click the first product for more details
+        driver.find_elements(By.CSS_SELECTOR, "span.a-size-medium")[0].click()
+        time.sleep(3)  # Allow details page to load
+
+        # Step 6: Validate details on the product page
+        product_title = wait_for_element(By.ID, "productTitle")
+        assert product_title, "Product title missing on details page"
+        scroll_and_highlight(product_title, "product_details_title")
+
+        # Product price on details page
+        try:
+            product_price = wait_for_element(By.CSS_SELECTOR, "span.a-price-whole")
+            scroll_and_highlight(product_price, "product_details_price")
+        except:
+            print("Price not found on details page")
+
+        # Product availability
+        try:
+            availability = wait_for_element(By.ID, "availability")
+            scroll_and_highlight(availability, "product_details_availability")
+        except:
+            print("Availability info not found on details page")
+
+        print("Test Case 1: Passed")
+
+    except AssertionError as error:
+        print(f"Test Case 1: Failed - {error}")
+    except TimeoutException:
+        print("Test Case 1: Failed - Element not found within timeout.")
+    finally:
+        driver.quit()
+
+# Create screenshots folder if not exists
+os.makedirs("testcase11", exist_ok=True)
+test_search_and_product_details()
+
