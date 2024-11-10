@@ -41,17 +41,27 @@ Dependencies
 The script imports the following modules:
 
 python
-Copy code
+
 from selenium import webdriver
+
 from selenium.webdriver.common.by import By
+
 from selenium.webdriver.common.keys import Keys
+
 from selenium.webdriver.support.ui import WebDriverWait
+
 from selenium.webdriver.support import expected_conditions as EC
+
 from selenium.common.exceptions import TimeoutException
+
 import time
+
 import os
+
 Script Logic
+
 Initialize WebDriver: Sets up the Chrome WebDriver and opens the Amazon homepage.
+
 Define Helper Functions:
 
 wait_for_element: Waits for an element to be visible on the page.
@@ -59,6 +69,7 @@ wait_for_element: Waits for an element to be visible on the page.
 scroll_and_highlight: Scrolls to the element, highlights it, and takes a screenshot.
 
 Test Function - test_search_and_product_details:
+
 Opens the Amazon homepage and searches for "Laptop".
 
 Validates that search results are displayed, each containing title, price, and rating (for the first three results).
